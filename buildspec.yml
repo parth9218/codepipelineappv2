@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Installing dependencies..."
+      - npm install
+  pre_build:
+    commands:
+      - echo "Running unit tests..."
+      - npm run test
+  build:
+    commands:
+      - echo "Packaging SAM application..."
+      # Build the SAM application to compile dependencies/assets
+      - sam build
+      # Package the artifact. The $ARTIFACT_BUCKET env variable is passed by CodeBuild Project definition
+      - sam package --s3-bucket $ARTIFACT_BUCKET --output-template-file packaged.yaml
+artifacts:
+  files:
+    - packaged.yaml
